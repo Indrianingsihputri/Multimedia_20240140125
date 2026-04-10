@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Media Gallery - Notifikasi Interaktif | Tugas PDW</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(145deg, #f0f4fa 0%, #dce3ec 100%);
+            color: #1e2a3e;
+            padding: 2rem 1.5rem;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 2rem;
+            box-shadow: 0 25px 40px -14px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            backdrop-filter: blur(0px);
+            transition: all 0.2s;
+        }
+
+        /* HEADER */
+        .page-header {
+            background: linear-gradient(135deg, #1f2b48, #111c33);
+            padding: 2rem 2rem 1.8rem 2rem;
+            text-align: center;
+            color: white;
+            border-bottom: 5px solid #f9c74f;
+        }
+
+        .page-header h1 {
+            font-size: 2.6rem;
+            letter-spacing: -0.5px;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+        }
+
+        .page-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        /* Deskripsi di bawah header */
+        .description-area {
+            background: #ffffffdd;
+            backdrop-filter: blur(4px);
+            margin: 1.8rem 2rem 0.5rem 2rem;
+            padding: 1rem 1.8rem;
+            border-radius: 28px;
+            background: #ffffff;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.05);
+            border-left: 6px solid #f9c74f;
+        }
+
+        .description-area p {
+            font-size: 1.05rem;
+            color: #1f2b48;
+            font-weight: 500;
+        }
+
+        .description-area small {
+            color: #5d6f7f;
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 0.85rem;
+        }
+
+        /* Grid media */
+        .media-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            padding: 2rem 2rem 2.5rem 2rem;
+        }
+
+        /* Card style */
+        .media-card {
+            background: #ffffff;
+            border-radius: 1.5rem;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            transition: transform 0.25s ease, box-shadow 0.25s;
+            border: 1px solid #eef2f8;
+        }
+
+        .media-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 22px 30px -12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Alert styling sesuai format file (tetap ada alert visual) */
+        .alert {
+            padding: 0.9rem 1.2rem;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95rem;
+            background: #fef9e6;
+            color: #a46800;
+            border-left: 5px solid #ffb703;
+        }
+
+        .alert::before {
+            content: "🔔";
+            font-size: 1.2rem;
+        }
+
+        /* variasi warna alert */
+        .alert-video-local {
+            background: #e1f0fa;
+            color: #0a5580;
+            border-left-color: #0d6efd;
+        }
+        .alert-video-local::before {
+            content: "📹";
+        }
+
+        .alert-video-yt {
+            background: #ffe8e3;
+            color: #b34222;
+            border-left-color: #ff4d2e;
+        }
+        .alert-video-yt::before {
+            content: "▶️";
+        }
+
+        .alert-audio {
+            background: #e4f5e4;
+            color: #236b27;
+            border-left-color: #2e7d32;
+        }
+        .alert-audio::before {
+            content: "🎵";
+        }
+
+        .alert-image {
+            background: #f1e7fa;
+            color: #5e2a84;
+            border-left-color: #9c27b0;
+        }
+        .alert-image::before {
+            content: "🖼️";
+        }
+
+        /* konten media */
+        .media-content {
+            padding: 1.8rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #fefefe;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        /* efek pointer untuk menunjukkan bisa diklik */
+        .media-content video, 
+        .media-content iframe,
+        .media-content audio,
+        .media-content img {
+            cursor: pointer;
+        }
+        
+        /* area gambar dan lainnya lebih responsif */
+        video {
+            max-width: 100%;
+            height: auto;
+            border-radius: 1rem;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.1);
+        }
+
+        iframe {
+            max-width: 100%;
+            border-radius: 1rem;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.1);
+            pointer-events: auto; /* tetap bisa interaksi dengan youtube */
+        }
+
+        audio {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 40px;
+        }
+
+        img {
+            max-width: 100%;
+            border-radius: 1.2rem;
+            box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
+            transition: transform 0.2s, filter 0.2s;
+            border: 2px solid white;
+        }
+
+        img:hover {
+            transform: scale(1.01);
+            filter: brightness(0.98);
+        }
+
+        @media (max-width: 680px) {
+            body {
+                padding: 1rem;
+            }
+            .media-grid {
+                padding: 1rem;
+            }
+            .page-header h1 {
+                font-size: 1.9rem;
+            }
+            .description-area {
+                margin: 1rem 1rem 0rem 1rem;
+            }
+            .media-content {
+                padding: 1.2rem;
+            }
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #4a627a;
+            padding: 1rem 0 1.8rem 0;
+            border-top: 1px solid #dee2e8;
+            margin-top: 0.5rem;
+        }
+
+        .info-notif {
+            text-align: center;
+            background: #f9f3df;
+            margin: 0 2rem 1rem 2rem;
+            border-radius: 40px;
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            color: #ad7a2c;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- HEADER -->
+    <div class="page-header">
+        <h1>✨ Tugas PDW - Media Interaktif ✨</h1>
+        <p>Klik video, YouTube, audio, atau gambar untuk mendapatkan notifikasi sesuai format!</p>
+    </div>
+
+    <!-- Deskripsi di bawah header -->
+    <div class="description-area">
+        <p>📌 <strong>Selamat datang di galeri multimedia</strong> — Halaman ini menampilkan video lokal (Sofia the First & Cinderella), video embed YouTube (Sofia the First Disney Junior), audio lagu "Fly to Your Heart" (Tinker Bell), serta gambar Tinker Bell. <strong>✨ FITUR NOTIFIKASI:</strong> Klik pada area media (video, iframe YouTube, audio player, atau gambar) akan memunculkan pesan notifikasi JavaScript yang memberi tahu format file-nya! Contoh: "Video ini LOKAL! 📹", "Video ini dari YOUTUBE!", "Audio ini LOKAL! 🎧", "Gambar ini LOKAL! 🖼️".</p>
+        <small>🔊 Catatan: Untuk pengalaman autoplay, video dan audio menggunakan atribut 'muted' (kebijakan browser). Namun notifikasi tetap muncul saat diklik. YouTube iframe juga mendukung notifikasi saat area player diklik (karena event listener terpasang).</small>
+    </div>
+
+    <div class="media-grid">
+        
+        <!-- 1. VIDEO LOKAL (file .mp4) dengan event klik notifikasi -->
+        <div class="media-card">
+            <div class="alert alert-video-local">
+                ⚡ <strong>Video lokal</strong>
+            </div>
+            <div class="media-content" id="localVideoContainer">
+                <video 
+                    id="localVideo"
+                    width="640" 
+                    height="360" 
+                    controls 
+                    autoplay 
+                    muted
+                    poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='360' viewBox='0 0 640 360'%3E%3Crect width='100%25' height='100%25' fill='%23212a3e'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23f9c74f' font-size='18' font-family='monospace'%3E🎬 Video Lokal: Sofia The First%3C/text%3E%3C/svg%3E"
+                    src="video/Sofia the First Meets Disney Princess Cinderella! 🏰 _ Sofia the First _ @disneyjr - (1080p).mp4"
+                >
+                </video>
+            </div>
+            <div style="padding: 0 1.5rem 1rem 1.5rem; font-size: 0.85rem; color: #4b5c6b; text-align: center;">
+                🎬 <strong>Lokal:</strong> "Sofia the First meets Cinderella" – Klik video untuk notifikasi!
+            </div>
+        </div>
+
+        <!-- 2. VIDEO YOUTUBE (iframe) dengan notifikasi saat diklik -->
+        <div class="media-card">
+            <div class="alert alert-video-yt">
+                🌐 <strong>Video YOUTUBE!</strong>
+            </div>
+            <div class="media-content" id="ytContainer">
+                <div id="video-yt" style="width: 100%; display: flex; justify-content: center;">
+                    <iframe 
+                        id="youtubeIframe"
+                        width="560" 
+                        height="315" 
+                        src="https://www.youtube.com/embed/eLMh-sC3GmI?si=_OaSSuV04BerbIy6&autoplay=0" 
+                        title="YouTube video player - Sofia the First Disney Junior" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        referrerpolicy="strict-origin-when-cross-origin" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
+            </div>
+            <div style="padding: 0 1.5rem 1rem 1.5rem; font-size: 0.85rem; color: #4b5c6b; text-align: center;">
+                📺 <strong>YouTube:</strong> "Sofia" – Klik 
+            </div>
+            </div>
+        </div>
+
+        <!-- 3. AUDIO LOKAL (file mp3) dengan notifikasi -->
+        <div class="media-card">
+            <div class="alert alert-audio">
+                🎧 <strong>Audio</strong>
+            </div>
+            <div class="media-content" id="audioContainer">
+                <div id="audio" style="width: 100%; text-align: center;">
+                    <audio id="localAudio" controls autoplay muted>
+                        <source src="audio/Sofia the First — Theme Song (Lirik Terjemahan).mp3" type="audio/mpeg">
+                    </audio>
+                </div>
+            </div>
+            <div style="padding: 0 1.5rem 1rem 1.5rem; font-size: 0.85rem; color: #4b5c6b; text-align: center;">
+                🧚‍♀️ <strong>Lagu:</strong> "Sofia" – Klik audio 
+            </div>
+            </div>
+        </div>
+
+        <!-- 4. GAMBAR LOKAL (Tinker Bell) dengan notifikasi -->
+        <div class="media-card">
+            <div class="alert alert-image">
+                🖼️ <strong>Gambar</strong>
+            </div>
+            <div class="media-content" id="imageContainer">
+                <div id="image" style="text-align: center;">
+                    <img 
+                        id="images"
+                        src="images/The Royal Family.jpg" 
+                        alt="Tinker Bell - Disney Fairies" 
+                        title="Klik untuk notifikasi gambar lokal!"
+                        loading="lazy"
+                        style="max-width: 100%; border-radius: 20px; cursor: pointer;"
+                    >
+                </div>
+            </div>
+            <div style="padding: 0 1.5rem 1rem 1.5rem; font-size: 0.85rem; color: #4b5c6b; text-align: center;">
+                ✨ <strong>Karakter:</strong> Sofia the royal family (Sofia, King Roland II, Queen Miranda) – 
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    // 1. Video Lokal (element <video>)
+    const localVideo = document.getElementById('localVideo');
+    if (localVideo) {
+        // kita ingin notifikasi ketika user mengklik area video (bukan hanya tombol, tetapi area video)
+        localVideo.addEventListener('click', function(event) {
+            event.stopPropagation(); // agar tidak bentrok dengan container jika ada
+            alert("📹 Video ini LOKAL!");
+        });
+
+    }
+    // Untuk memastikan area sekitar video juga mengirim notifikasi (tapi video sudah cukup)
+    const localVideoContainer = document.getElementById('localVideoContainer');
+    if (localVideoContainer) {
+        localVideoContainer.addEventListener('click', function(e) {
+            // jika yang diklik bukan video itu sendiri, tetap trigger notifikasi untuk lokal video?
+            // Tapi agar tidak double, kita cek jika target bukan video maka tetap muncul notifikasi (memudahkan user)
+            if (e.target !== localVideo) {
+                alert("📹 Video ini LOKAL! (Klik video lokal)");
+            }
+        });
+    }
+
+    const ytContainerDiv = document.getElementById('ytContainer');
+    const youtubeIframe = document.getElementById('youtubeIframe');
+    if (ytContainerDiv) {
+        ytContainerDiv.addEventListener('click', function(e) {
+            // Menampilkan notifikasi video YOUTUBE
+            alert("▶️ Video ini dari YOUTUBE!");
+        });
+    }
+    
+    // 3. Audio Lokal (element <audio>)
+    const localAudio = document.getElementById('localAudio');
+    if (localAudio) {
+        localAudio.addEventListener('click', function(event) {
+            event.stopPropagation();
+            alert("🎵 Audio ini LOKAL! (File MP3 - Fly to Your Heart - Tinker Bell)");
+        });
+    }
+    const audioContainer = document.getElementById('audioContainer');
+    if (audioContainer) {
+        audioContainer.addEventListener('click', function(e) {
+            if (e.target !== localAudio) {
+                alert("🎵 Audio ini LOKAL! (Klik pemutar audio)");
+            }
+        });
+    }
+    
+    // 4. Gambar Lokal (tag img)
+    const localImage = document.getElementById('localImage');
+    if (localImage) {
+        localImage.addEventListener('click', function(event) {
+            event.stopPropagation();
+            alert("🖼️ Gambar ini LOKAL!");
+        });
+    }
+    const imageContainerDiv = document.getElementById('imageContainer');
+    if (imageContainerDiv) {
+        imageContainerDiv.addEventListener('click', function(e) {
+            if (e.target !== localImage) {
+                alert("🖼️ Gambar ini LOKAL!");
+            }
+        });
+    }
+    
+</script>
+
+</body>
+</html>
